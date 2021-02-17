@@ -56,7 +56,7 @@ class WeatherRepository @Inject constructor(
         }
     }
 
-    fun loadWeather(
+    private fun loadWeather(
         weatherResult: NetworkResult.WeatherResult,
         forecastResult: NetworkResult.ForecastResult
     ) {

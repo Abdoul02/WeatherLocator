@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,13 +53,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         if (!appUtility.hasLocationPermission(requireContext())) {
             requestPermissions()
         } else {
-            if (!appUtility.isLocationEnabled()) {
-                appUtility.showMessage(getString(R.string.turn_location_on))
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
-            } else {
-                getWeather()
-            }
+            getDataWhenLocationIsAvailable()
         }
 
         forecastAdapter = ForecastAdapter(requireContext())
@@ -71,6 +64,15 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         return root
     }
 
+    private fun getDataWhenLocationIsAvailable() {
+        if (!appUtility.isLocationEnabled()) {
+            appUtility.showMessage(getString(R.string.turn_location_on))
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+        } else {
+            getWeather()
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -220,13 +222,24 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun requestPermissions() {
-        EasyPermissions.requestPermissions(
-            this,
-            getString(R.string.permission_required),
-            AppUtility.REQUEST_CODE_LOCATION_PERMISSION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            EasyPermissions.requestPermissions(
+                this,
+                getString(R.string.all_permission_required),
+                AppUtility.REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.READ_PHONE_STATE
+            )
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                getString(R.string.permission_required),
+                AppUtility.REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -247,5 +260,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        getDataWhenLocationIsAvailable()
     }
 }
