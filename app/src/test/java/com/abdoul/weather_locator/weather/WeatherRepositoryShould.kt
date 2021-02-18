@@ -47,17 +47,6 @@ class WeatherRepositoryShould : BaseUnitTest() {
     }
 
     @Test
-    fun getCurrentWeatherFromService() = runBlockingTest {
-        val repository = mockWeatherData()
-
-        repository.getWeatherInfo()
-        delay(1)
-
-        verify(service, times(1)).fetchCurrentWeather(latLng)
-        verify(service, times(1)).fetchForecast(latLng)
-    }
-
-    @Test
     fun getWeatherDataFromDb() = runBlockingTest {
         val repository = mockWeatherData()
 
