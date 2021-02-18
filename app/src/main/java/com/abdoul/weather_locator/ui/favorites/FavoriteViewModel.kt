@@ -1,7 +1,6 @@
 package com.abdoul.weather_locator.ui.favorites
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.abdoul.weather_locator.model.UserLocation
 import com.abdoul.weather_locator.repository.LocationRepository

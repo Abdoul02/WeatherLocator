@@ -9,8 +9,9 @@ import com.abdoul.weather_locator.other.AppUtility
 import com.abdoul.weather_locator.other.LocationProvider
 import com.abdoul.weather_locator.service.WeatherService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import java.lang.RuntimeException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.zip
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -28,6 +29,10 @@ class WeatherRepository @Inject constructor(
 
     private val _weatherError = MutableLiveData<Throwable>()
     val weatherError: LiveData<Throwable> = _weatherError
+
+    init {
+        locationProvider.getCurrentLocation()
+    }
 
     fun getWeatherInfo() {
         if (appUtility.isOnline()) {

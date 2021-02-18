@@ -12,6 +12,8 @@ import android.net.NetworkCapabilities
 import android.view.View
 import android.widget.Toast
 import androidx.core.graphics.drawable.DrawableCompat
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.qualifiers.ApplicationContext
 import pub.devrel.easypermissions.EasyPermissions
@@ -77,6 +79,15 @@ class AppUtility @Inject constructor(@ApplicationContext private val context: Co
         val calender = Calendar.getInstance()
         calender.timeInMillis = if (isFromApi) milliSeconds * 1000 else milliSeconds
         return formatter.format(calender.time)
+    }
+
+    fun checkPlayServices(): Boolean {
+        val gApi = GoogleApiAvailability.getInstance()
+        val resultCode = gApi.isGooglePlayServicesAvailable(context)
+        if (resultCode != ConnectionResult.SUCCESS) {
+            return false
+        }
+        return true
     }
 
     companion object {

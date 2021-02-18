@@ -54,6 +54,7 @@ class MapFragment : Fragment() {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         val root = binding.root
 
+        locationProvider.getCurrentLocation()
         Mapbox.getInstance(requireContext(), MAPBOX_TOKEN)
 
         binding.mapView.onCreate(savedInstanceState)

@@ -18,29 +18,32 @@ class LocationProvider @Inject constructor(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val locationRequest: LocationRequest,
     private val appUtility: AppUtility,
+    private val gpsTracker: GPSTracker,
     @ApplicationContext private val context: Context
 ) {
-    init {
-        getCurrentLocation()
-    }
 
     private val _locationState = MutableStateFlow<LocationData>(LocationData.Empty)
     val locationState: StateFlow<LocationData> = _locationState
 
     @SuppressLint("MissingPermission")
-    private fun getCurrentLocation() {
-        if (appUtility.hasLocationPermission(context)) {
-            fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
-                val location: Location? = task.result
-                if (location == null) {
-                    fusedLocationProviderClient.requestLocationUpdates(
-                        locationRequest, mLocationCallback,
-                        Looper.myLooper()
-                    )
-                } else {
-                    _locationState.value = LocationData.LocationRetrieved(LatLng(location))
+    fun getCurrentLocation() {
+        if (appUtility.checkPlayServices()) {
+            if (appUtility.hasLocationPermission(context)) {
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
+                    val location: Location? = task.result
+                    if (location == null) {
+                        fusedLocationProviderClient.requestLocationUpdates(
+                            locationRequest, mLocationCallback,
+                            Looper.myLooper()
+                        )
+                    } else {
+                        _locationState.value = LocationData.LocationRetrieved(LatLng(location))
+                    }
                 }
             }
+        } else {
+            val location = LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude())
+            _locationState.value = LocationData.LocationRetrieved(location)
         }
     }
 
